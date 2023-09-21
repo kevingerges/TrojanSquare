@@ -25,8 +25,23 @@ export const AppProvider = ({ children }) => {
   };
 
   const setProfileImage = () => {
-    setUserImage(JSON.parse(localStorage.getItem("profile")));
+    try {
+      const userProfile = JSON.parse(localStorage.getItem("profile"));
+  
+      // Check if userProfile is not null or undefined before using it
+      if (userProfile) {
+        // Update the user image with the parsed data
+        setUserImage(userProfile);
+      } else {
+        // Handle the case where the "profile" key doesn't exist in localStorage
+        console.error('No "profile" data found in localStorage');
+      }
+    } catch (error) {
+      // Handle the error, e.g., log it or display an error message to the user.
+      console.error('Error parsing JSON:', error);
+    }
   };
+  
 
   const useLogin = () => {
     setIsLogin(!isLogin);
