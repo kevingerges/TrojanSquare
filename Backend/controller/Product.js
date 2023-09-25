@@ -13,11 +13,6 @@ const channels = new Channels({
 });
 
 const createProduct = async (req, res) => {
-  // console.log(req.body);
-  // console.log(req.files);
-  // res.send("hi");
-  // return;
-
   const { price, title } = req.body;
   const price_for_stripe = price * 100;
   const stripproduct = await stripe.products.create({
@@ -28,60 +23,100 @@ const createProduct = async (req, res) => {
     },
   });
 
+  const sellerid = req.body.sellerid;
+  console.log(sellerid)
+
+
+  // !mongoose.Types.ObjectId.isValid(sellerid
+  if (!sellerid) {
+    res.status(400).json({ error: "Invalid sellerid" });
+    return;
+  
+  }
+  
+
   const { id } = req.user;
   const images_arr = req.files.map((file) => {
     return `http://localhost:5000/api/v1/${file.filename}`;
   });
-  // console.log(images_arr);
-  // return;
-  const product = await Product.create({
-    title: req.body.title,
-    description: req.body.description,
-    price: req.body.price,
-    hashtags: req.body.hashtags,
-    catagory: req.body.catagory,
-    condition: req.body.condition,
-    priceid: stripproduct.default_price,
-    isOnline: req.body.isOnline,
-    images: images_arr,
-    sellerid: id,
-  });
-  await channels.trigger("hacktech", "create-product", product);
-  res.status(200).json({ product });
+
+  try {
+    const product = await Product.create({
+      title: req.body.title,
+      description: req.body.description,
+      price: req.body.price,
+      hashtags: req.body.hashtags,
+      catagory: req.body.catagory,
+      condition: req.body.condition,
+      priceid: stripproduct.default_price,
+      isOnline: req.body.isOnline,
+      images: images_arr,
+      sellerid: req.body.sellerid,
+    });
+
+    await channels.trigger("hacktech", "create-product", product);
+
+    // Redirect the user to the newly created item's page
+    res.redirect(`/item/${product._id}`); // Assuming you have a route for viewing items
+    const { id } = req.user;
+    await User.findByIdAndUpdate(id, { $inc: { listings: 1 } });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred while creating the product" });
+  }
 };
 
 const editProduct = async (req, res) => {
   const { id } = req.params;
-  const product = await Product.findByIdAndUpdate({ _id: id }, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  res.status(200).json({ product });
-  // res.send(id);
+  try {
+    const product = await Product.findByIdAndUpdate({ _id: id }, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json({ product });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred while editing the product" });
+  }
 };
 
 const findAllProducts = async (req, res) => {
-  const allProducts = await Product.aggregate([
-    {
-      $group: {
-        _id: "$catagory",
-        products: { $push: "$$ROOT" },
+  try {
+    const allProducts = await Product.aggregate([
+      {
+        $group: {
+          _id: "$catagory",
+          products: { $push: "$$ROOT" },
+        },
       },
-    },
-  ]);
-  res.status(200).json({ allProducts });
+    ]);
+    res.status(200).json({ allProducts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred while retrieving products" });
+  }
 };
 
 const findUserProducts = async (req, res) => {
   const { id } = req.params;
-  const products = await Product.find({ sellerid: id });
-  res.status(200).json({ products });
+  try {
+    const products = await Product.find({ sellerid: id });
+    res.status(200).json({ products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred while retrieving user products" });
+  }
 };
 
 const findSingleProduct = async (req, res) => {
   const { id } = req.params;
-  const product = await Product.findOne({ _id: id });
-  res.status(200).json({ product });
+  try {
+    const product = await Product.findOne({ _id: id });
+    res.status(200).json({ product });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred while retrieving the product" });
+  }
 };
 
 module.exports = {

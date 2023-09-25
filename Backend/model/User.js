@@ -34,8 +34,26 @@ const UserSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  resetPasswordToken: String,           // Add resetPasswordToken field
-  resetPasswordExpires: Date,          // Add resetPasswordExpires field
+  sales: {
+    type: Number,
+    required: true,
+  },
+  listings: {
+    type: Number,
+    required: true,
+  },
+  receivedReviews: [
+    {
+      rating: {
+        type: Number,
+        required: true,
+      },
+      comment: String,
+    },
+  ]
+
+  // resetPasswordToken: String,           // Add resetPasswordToken field
+  // resetPasswordExpires: Date,          // Add resetPasswordExpires field
 });
 
 UserSchema.pre("save", async function () {

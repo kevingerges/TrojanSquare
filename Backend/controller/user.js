@@ -35,18 +35,21 @@ const createUser = async (req, res) => {
   }
 };
  
-
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
     const isPasswordCorrect = await user.comparePassword(password);
     if (isPasswordCorrect) {
+      // Include the sellerid in the response
+      const { _id, fullName, email, imageurl, sellerid } = user;
       const token = await user.createjwt();
-      res.status(200).json({ user, token });
+      res.status(200).json({ user: { _id, fullName, email, imageurl, sellerid }, token });
+    } else {
+      res.status(403).json({ message: 'Incorrect password' });
     }
   } else {
-    res.status(403).json({ message: 'user not found' });
+    res.status(403).json({ message: 'User not found' });
   }
 };
 

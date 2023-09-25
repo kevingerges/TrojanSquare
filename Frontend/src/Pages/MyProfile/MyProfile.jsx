@@ -110,7 +110,7 @@ const MyProfile = () => {
       <UserDetail image={userimage} setProfileImage={setProfileImage} />
       <div className="w-full flex align-middle justify-center">
         <button className="w-3/4 h-14 bg-[#DB3B39] text-white mt-16 rounded-3xl text-2xl font-semibold">
-          MY Listing
+          My Listing
         </button>
       </div>
       <div className="mt-10 m-auto w-3/4">

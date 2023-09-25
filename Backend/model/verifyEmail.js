@@ -10,6 +10,6 @@ const verifyEmail = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
   },
-});
+}); 
 
 module.exports = mongoose.model("verifyEmail", verifyEmail);
