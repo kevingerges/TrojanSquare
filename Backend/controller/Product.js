@@ -1,7 +1,7 @@
 const Product = require("../model/Product");
 const Channels = require("pusher");
 const stripe = require("stripe")(
-  "sk_test_51MrYHJEg2I5qxKjJ4EYXuaKNXoJiPBXutcgXzRuKkGVgITnDeDBTQU3f5VtaMnMo138GBPGjfc33aGFCXfenx2Kg0065g0Sp9S"
+  "cooked"
 );
 
 const channels = new Channels({
