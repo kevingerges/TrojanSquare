@@ -4,7 +4,7 @@ const VerifyEmail = require('../model/verifyEmail');
 const { v4: uuidv4 } = require('uuid');
 const crypto = require('crypto');
 
-const API_KEY = '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';
+const API_KEY = 'not today';
 sgmail.setApiKey(API_KEY);
 
 const createUser = async (req, res) => {
